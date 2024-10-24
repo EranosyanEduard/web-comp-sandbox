@@ -1,0 +1,9 @@
+printWidth: 80
+semi: false
+singleAttributePerLine: true
+singleQuote: true
+trailingComma: none
+overrides:
+  - files: '**/*.{spec,test}.ts'
+    options:
+      printWidth: 120
