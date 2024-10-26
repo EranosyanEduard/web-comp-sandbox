@@ -11,7 +11,10 @@ export default [
     files: ['**/*.test.ts'],
     languageOptions: { globals: vitest.environments.env.globals },
     plugins: { vitest },
-    rules: vitest.configs.all.rules,
+    rules: {
+      ...vitest.configs.all.rules,
+      '@typescript-eslint/no-magic-numbers': 'warn'
+    },
     settings: { vitest: { typecheck: true } }
   }
 ]
