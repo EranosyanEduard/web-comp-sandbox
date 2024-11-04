@@ -1,6 +1,8 @@
 import { reactive, type ReactiveApi } from '../reactive'
 import type { Ref } from './typedef'
 
+const INSTANCES = new WeakMap<object, ReactiveApi<object>>()
+
 /**
  * Сделать значение `value` реактивным.
  * @param value - произвольное значение
@@ -8,13 +10,12 @@ import type { Ref } from './typedef'
 function ref<T>(value: T): Ref<T> {
   const values = reactive({ value })
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  ref._store.set(values, reactive._store.get(values)!)
+  INSTANCES.set(values, reactive._INSTANCES.get(values)!)
   // @ts-expect-error игнорировать ошибку типизации:
-  // причина ошибки - не соответствие типа `Reactive<{ value: T }>`
-  // типу `Ref<T>`.
+  // преобразовать тип `Reactive` в тип `Ref`.
   return values
 }
 
-ref._store = new WeakMap<object, ReactiveApi<object>>()
+ref._INSTANCES = INSTANCES as Pick<typeof INSTANCES, 'get' | 'has'>
 
 export default ref

@@ -9,22 +9,6 @@ describe('тест функции `ref`', () => {
     expect(ref('foo')).toStrictEqual({ value: 'foo' })
   })
 
-  it('должен подписаться на уничтожение компонента', () => {
-    expect.hasAssertions()
-
-    /* before */
-    const context = defineContext()
-    currentContext.set(context)
-
-    /* test */
-    ref({ foo: 'foo' })
-
-    expect(context.whenDestroyed).toHaveBeenCalledOnce()
-
-    /* after */
-    currentContext.set(null)
-  })
-
   it('должен потребовать рендер компонента при изменении реактивного значения', () => {
     expect.hasAssertions()
 
@@ -64,36 +48,6 @@ describe('тест функции `ref`', () => {
     vi.runAllTimers()
 
     expect(context.requestRender).not.toHaveBeenCalledOnce()
-
-    /* after */
-    currentContext.set(null)
-    vi.useRealTimers()
-  })
-
-  it('должен позволять управлять контекстом выполнения, добавляя и удаляя из него компоненты', () => {
-    expect.hasAssertions()
-
-    /* before */
-    vi.useFakeTimers()
-    const context = defineContext()
-
-    /* test */
-    const value = ref('foo')
-    ref._store.get(value)?.addContext(context)
-
-    expect(context.whenDestroyed).toHaveBeenCalledOnce()
-
-    value.value = 'bar'
-    vi.runAllTimers()
-
-    expect(context.requestRender).toHaveBeenCalledOnce()
-
-    const [whenDestroyedA = vi.fn()] = vi.mocked(context).whenDestroyed.mock.lastCall ?? []
-    whenDestroyedA()
-    value.value = 'baz'
-    vi.runAllTimers()
-
-    expect(context.requestRender).toHaveBeenCalledOnce()
 
     /* after */
     currentContext.set(null)

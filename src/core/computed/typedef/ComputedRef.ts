@@ -1,4 +1,4 @@
-import type { Opaque } from 'ts-essentials'
+import type { Reactive_ } from '../../reactive'
 
 /** Вычисляемое значение, доступное для чтения и записи */
-export type ComputedRef<T> = Opaque<{ value: T }, 'computed_ref'>
+export type ComputedRef<T> = Reactive_<{ value: T }, 'COMPUTED_REF'>

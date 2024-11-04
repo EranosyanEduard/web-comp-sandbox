@@ -1,58 +1,51 @@
-import _cloneDeep from 'lodash-es/cloneDeep'
 import _debounce from 'lodash-es/debounce'
-import type { Maybe } from '../helpers/typedef'
 import { currentContext } from '../current_context'
 import type { Reactive, ReactiveApi, Watcher } from './typedef'
+
+const INSTANCES = new WeakMap<object, ReactiveApi<object>>()
 
 /**
  * Сделать объект `values` реактивным.
  * @param values - произвольный объект
  */
 function reactive<T extends object>(values: T): Reactive<T> {
-  const watchers = new Set<Watcher<T>>()
-  let oldValues: Maybe<T> = null
-  const requestWatch = _debounce<Watcher<T>>((next, prev) => {
-    watchers.forEach((it) => {
-      it(next, prev)
+  const context = currentContext.get()
+  const changeSet = new Set<Watcher<T, T[keyof T]>>()
+  const change: Watcher<T, T[keyof T]> = (options) => {
+    context?.requestRender()
+    changeSet.forEach((onchange) => {
+      onchange(options)
     })
-    oldValues = null
-  })
-  const api: ReactiveApi<T> = {
-    addContext(context) {
-      if (context === null) return
-      context.whenDestroyed(
-        api.watch(() => {
-          context.requestRender()
-        })
-      )
-    },
-    watch(watcher) {
-      watchers.add(watcher)
-      return () => {
-        watchers.delete(watcher)
-      }
-    }
   }
+  const debounceChange = _debounce(change)
   const proxy = new Proxy(values, {
     set(target, key, value) {
       const keyAs = key as keyof T
       const prevValue = target[keyAs]
       if (prevValue !== value) {
-        oldValues ??= _cloneDeep(target)
         target[keyAs] = value
-        requestWatch(target, oldValues)
+        debounceChange({ nextValue: value, prevValue })
       }
       return true
     }
   })
-  api.addContext(currentContext.get())
-  reactive._store.set(proxy, api)
+  INSTANCES.set(proxy, {
+    whenChanged(onchange) {
+      // @ts-expect-error игнорировать ошибку типизации:
+      // невозможно обеспечить соответствие типов.
+      const onchangeAs: typeof change = onchange
+      changeSet.add(onchangeAs)
+      const stop = (): void => {
+        changeSet.delete(onchangeAs)
+      }
+      return stop
+    }
+  })
   // @ts-expect-error игнорировать ошибку типизации:
-  // причина ошибки - модификация типа `T` утилитой типа `Opaque`,
-  // которая превращает тип `T` в уникальный.
+  // преобразовать тип `T` в уникальный тип с помощью утилиты типа `Opaque`.
   return proxy
 }
 
-reactive._store = new WeakMap<object, ReactiveApi<object>>()
+reactive._INSTANCES = INSTANCES as Pick<typeof INSTANCES, 'get' | 'has'>
 
 export default reactive

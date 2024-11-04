@@ -7,7 +7,7 @@ import type { Ref } from './typedef'
  * @param value - произвольный объект
  */
 function isRef(value: unknown): value is Ref<unknown> {
-  return _isObject(value) && ref._store.has(value)
+  return _isObject(value) && ref._INSTANCES.has(value)
 }
 
 export default isRef

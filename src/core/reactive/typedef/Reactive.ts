@@ -1,4 +1,4 @@
-import type { Opaque } from 'ts-essentials'
+import type { Reactive_ } from './Reactive_'
 
 /** Реактивное значение */
-export type Reactive<T extends object> = Opaque<T, 'reactive'>
+export type Reactive<T extends object> = Reactive_<T, 'REACTIVE'>

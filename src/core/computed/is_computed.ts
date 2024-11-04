@@ -7,7 +7,7 @@ import computed from './computed'
  * @param value - произвольное значение
  */
 function isComputedRef(value: unknown): value is ComputedRef<unknown> {
-  return _isObject(value) && computed._store.has(value)
+  return _isObject(value) && computed._INSTANCES.has(value)
 }
 
 export default isComputedRef
