@@ -1,14 +1,18 @@
 import { describe, expect, expectTypeOf, it } from 'vitest'
 import type { Maybe } from '../Maybe'
 
-describe('тест типа `Maybe`', () => {
+describe('тестовый набор типа `Maybe`', () => {
   it('должен создать nullable-значение', () => {
     expect.hasAssertions()
 
-    const received: { _: Maybe<boolean> } = { _: true }
+    function getOrNull(numbers: number[], index: number): Maybe<number> {
+      return numbers[index] ?? null
+    }
 
-    expectTypeOf(received).toEqualTypeOf<{ _: boolean | null }>()
+    expectTypeOf(getOrNull).toEqualTypeOf<
+      (numbers: number[], index: number) => number | null
+    >()
 
-    expect(received).toBe(received)
+    expect(true).toBeTruthy()
   })
 })

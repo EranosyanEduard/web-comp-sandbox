@@ -3,7 +3,7 @@ import { currentContext } from '../../current_context'
 import { defineContext } from '../../helpers/test'
 import onMounted from '../on_mounted'
 
-describe('тест функции `onMounted`', () => {
+describe('тестовый набор функции `onMounted`', () => {
   it('должен подписаться на создание компонента', () => {
     expect.hasAssertions()
 

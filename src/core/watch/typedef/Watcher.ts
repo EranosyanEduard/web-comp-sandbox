@@ -1,4 +1,2 @@
-import type { AnyFunction } from 'ts-essentials'
-
 /** Наблюдатель за значением */
-export type Watcher<T> = AnyFunction<[T, T], void | Promise<void>>
+export type Watcher<T> = (nextValue: T, prevValue: T) => void | Promise<void>

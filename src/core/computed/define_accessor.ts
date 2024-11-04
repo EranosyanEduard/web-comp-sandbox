@@ -12,7 +12,7 @@ function defineAccessor<T>(
   if (_isFunction(value)) {
     return {
       get: value,
-      set() {
+      set: () => {
         throw new ReadonlyPropertyError({ property: 'value' })
       }
     }

@@ -1,7 +1,7 @@
-import type { AnyFunction } from 'ts-essentials'
-import type { Watcher } from './Watcher'
+import type { ValueOf } from 'ts-essentials'
+import type { OnChange } from './OnChange'
 
 /** _Api_ для управления реактивным значением */
 export interface ReactiveApi<T extends object> {
-  readonly whenChanged: AnyFunction<[Watcher<T, T[keyof T]>], VoidFunction>
+  readonly whenChanged: (onchange: OnChange<ValueOf<T>>) => VoidFunction
 }

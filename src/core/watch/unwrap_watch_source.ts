@@ -2,7 +2,7 @@ import _identity from 'lodash-es/identity'
 import type { AnyFunction } from 'ts-essentials'
 import { isComputedRef } from '../computed'
 import { ArgumentError } from '../helpers/error'
-import { isReactive, type WatcherParams } from '../reactive'
+import { isReactive, type OnChangeParams } from '../reactive'
 import { isRef } from '../ref'
 import type { WatchSource } from './typedef'
 
@@ -14,7 +14,7 @@ import type { WatchSource } from './typedef'
  */
 function unwrapWatchSource(
   watchSource: WatchSource
-): AnyFunction<[WatcherParams<unknown>], WatcherParams<unknown>> {
+): AnyFunction<[OnChangeParams<unknown>], OnChangeParams<unknown>> {
   if (isComputedRef(watchSource) || isRef(watchSource)) {
     return _identity
   }

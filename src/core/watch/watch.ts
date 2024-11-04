@@ -1,7 +1,7 @@
 import _isEqual from 'lodash-es/isEqual'
 import type { ComputedRef } from '../computed'
 import { currentContext } from '../current_context'
-import type { Reactive, Watcher as ReactiveWatcher } from '../reactive'
+import type { Reactive, OnChange as ReactiveWatcher } from '../reactive'
 import type { Ref } from '../ref'
 import type { Watcher, WatchOptions, WatchSource } from './typedef'
 import getWatchers from './get_watchers'
@@ -14,6 +14,8 @@ import unwrapWatchSource from './unwrap_watch_source'
  * наблюдения
  * @param watchOptions - конфигурация наблюдения
  * @throws {ArgumentError} см. {@link getWatchers}
+ * @since 1.0.0
+ * @version 1.0.0
  */
 function watch<T extends object>(
   watchSource: Reactive<T>,
@@ -28,6 +30,8 @@ function watch<T extends object>(
  * наблюдения
  * @param watchOptions - конфигурация наблюдения
  * @throws {ArgumentError} см. {@link getWatchers}
+ * @since 1.0.0
+ * @version 1.0.0
  */
 function watch<T>(
   watchSource: ComputedRef<T> | Readonly<ComputedRef<T>> | Ref<T>,
@@ -43,7 +47,7 @@ function watch(
   const { deep = false, immediate = false, once = false } = watchOptions ?? {}
   const addWatcher = getWatchers(watchSource)
   const unwrap = unwrapWatchSource(watchSource)
-  const watcher_: ReactiveWatcher<object, never> = (options) => {
+  const watcher_: ReactiveWatcher<unknown> = (options) => {
     const { nextValue, prevValue } = unwrap(options)
     if (deep && _isEqual(nextValue, prevValue)) return
     if (once) deleteWatcher()

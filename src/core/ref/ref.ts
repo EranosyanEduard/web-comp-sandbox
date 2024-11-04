@@ -6,6 +6,8 @@ const INSTANCES = new WeakMap<object, ReactiveApi<object>>()
 /**
  * Сделать значение `value` реактивным.
  * @param value - произвольное значение
+ * @since 1.0.0
+ * @version 1.0.0
  */
 function ref<T>(value: T): Ref<T> {
   const values = reactive({ value })

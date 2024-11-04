@@ -1,5 +1,5 @@
+export type * from './OnChange'
+export type * from './OnChangeParams'
 export type * from './Reactive'
 export type * from './Reactive_'
 export type * from './ReactiveApi'
-export type * from './Watcher'
-export type * from './WatcherParams'

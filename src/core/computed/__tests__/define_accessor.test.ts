@@ -3,7 +3,7 @@ import { ReadonlyPropertyError } from '../../helpers/error'
 import type { Accessor } from '../../helpers/typedef'
 import defineAccessor from '../define_accessor'
 
-describe('тест функции `defineAccessor`', () => {
+describe('тестовый набор функции `defineAccessor`', () => {
   it('должен создать свойство доступа из геттера', () => {
     expect.hasAssertions()
 
@@ -21,6 +21,6 @@ describe('тест функции `defineAccessor`', () => {
 
     const accessor: Accessor<string> = { get: vi.fn(), set: vi.fn() }
 
-    expect(accessor).toStrictEqual(defineAccessor(accessor))
+    expect(accessor === defineAccessor(accessor)).toBeTruthy()
   })
 })

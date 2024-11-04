@@ -1,44 +1,46 @@
 import _debounce from 'lodash-es/debounce'
+import type { ValueOf } from 'ts-essentials'
 import { currentContext } from '../current_context'
-import type { Reactive, ReactiveApi, Watcher } from './typedef'
+import type { Reactive, ReactiveApi, OnChange } from './typedef'
 
 const INSTANCES = new WeakMap<object, ReactiveApi<object>>()
 
 /**
  * Сделать объект `values` реактивным.
  * @param values - произвольный объект
+ * @since 1.0.0
+ * @version 1.0.0
  */
 function reactive<T extends object>(values: T): Reactive<T> {
   const context = currentContext.get()
-  const changeSet = new Set<Watcher<T, T[keyof T]>>()
-  const change: Watcher<T, T[keyof T]> = (options) => {
+  const changeSet = new Set<OnChange<ValueOf<T>>>()
+  const change: OnChange<ValueOf<T>> = (options) => {
     context?.requestRender()
     changeSet.forEach((onchange) => {
       onchange(options)
     })
   }
-  const debounceChange = _debounce(change)
+  const changeLazy = _debounce(change)
   const proxy = new Proxy(values, {
-    set(target, key, value) {
+    set: (target, key, value) => {
       const keyAs = key as keyof T
-      const prevValue = target[keyAs]
+      const prevValue = target[keyAs] as ValueOf<T>
       if (prevValue !== value) {
         target[keyAs] = value
-        debounceChange({ nextValue: value, prevValue })
+        changeLazy({ nextValue: value, prevValue })
       }
       return true
     }
   })
   INSTANCES.set(proxy, {
-    whenChanged(onchange) {
+    whenChanged: (onchange) => {
       // @ts-expect-error игнорировать ошибку типизации:
       // невозможно обеспечить соответствие типов.
       const onchangeAs: typeof change = onchange
       changeSet.add(onchangeAs)
-      const stop = (): void => {
+      return (): void => {
         changeSet.delete(onchangeAs)
       }
-      return stop
     }
   })
   // @ts-expect-error игнорировать ошибку типизации:

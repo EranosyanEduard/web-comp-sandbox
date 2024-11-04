@@ -3,7 +3,7 @@ import { currentContext } from '../../current_context'
 import { defineContext } from '../../helpers/test'
 import onDestroyed from '../on_destroyed'
 
-describe('тест функции `onDestroyed`', () => {
+describe('тестовый набор функции `onDestroyed`', () => {
   it('должен подписаться на уничтожение компонента', () => {
     expect.hasAssertions()
 

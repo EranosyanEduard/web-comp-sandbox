@@ -1,22 +1,32 @@
-import type { AnyFunction } from 'ts-essentials'
-import { describe, expect, expectTypeOf, it, vi } from 'vitest'
+import { describe, expect, expectTypeOf, it } from 'vitest'
 import type { Accessor } from '../Accessor'
 
-describe('тест типа `Accessor`', () => {
+describe('тестовый набор типа `Accessor`', () => {
   it('должен создать свойство доступа для определённого типа', () => {
     expect.hasAssertions()
 
-    interface Expected {
-      readonly get: AnyFunction<[], unknown>
-      readonly set: AnyFunction<[unknown], void>
+    interface Context {
+      readonly use: VoidFunction
     }
 
-    const received: { _: Accessor<unknown> } = {
-      _: { get: vi.fn(), set: vi.fn() }
+    function defineContext(): Accessor<Context | null> {
+      let context: Context | null = null
+      const accessor: Accessor<Context | null> = {
+        get: () => context,
+        set: (value) => {
+          context = value
+        }
+      }
+      return accessor
     }
 
-    expectTypeOf(received).toEqualTypeOf<{ _: Expected }>()
+    expectTypeOf(defineContext).toEqualTypeOf<
+      () => {
+        readonly get: () => Context | null
+        readonly set: (value: Context | null) => void
+      }
+    >()
 
-    expect(received).toBe(received)
+    expect(true).toBeTruthy()
   })
 })

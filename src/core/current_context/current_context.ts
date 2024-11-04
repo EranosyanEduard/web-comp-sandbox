@@ -4,10 +4,8 @@ import type { CurrentContext } from './typedef'
 let _currentContext: CurrentContext = null
 /** _API_ для управления контекстом выполнения */
 const currentContext: Accessor<CurrentContext> = {
-  get() {
-    return _currentContext
-  },
-  set(context) {
+  get: () => _currentContext,
+  set: (context) => {
     _currentContext = context
   }
 }
