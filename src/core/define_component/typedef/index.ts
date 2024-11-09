@@ -1,6 +1,7 @@
 export type * from './Component'
 export type * from './ComponentConstructor'
 export type * from './ComponentOptions'
+export type * from './Emitter'
 export type * from './PropsOptions'
 export type * from './SuperProps'
 export type * from './WhenCallbacks'

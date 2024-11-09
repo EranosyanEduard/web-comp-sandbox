@@ -6,6 +6,7 @@ import type { Head } from 'ts-essentials'
 import { type Context, currentContext } from '../current_context'
 import { defineCustomElement } from '../define_custom_element'
 import { processPropOptions } from '../define_prop'
+import { MyEvent } from '../emit'
 import type {
   Component as IComponent,
   ComponentConstructor,
@@ -20,9 +21,10 @@ import type {
  * @throws {DOMException} см. {@link defineCustomElement}
  * @throws {SyntaxError} см. {@link defineCustomElement}
  */
-function defineComponent<Props extends SuperProps>(
-  options: ComponentOptions<Props>
-): ComponentConstructor {
+function defineComponent<
+  Props extends SuperProps,
+  EventType extends string = string
+>(options: ComponentOptions<Props, EventType>): ComponentConstructor {
   const { name, props, setup } = options
   const propsConfigs = _mapValues(props, processPropOptions)
   const Component = class extends HTMLElement implements IComponent {
@@ -120,7 +122,12 @@ function defineComponent<Props extends SuperProps>(
       props: Head<Parameters<typeof setup>>
     ): ReturnType<typeof setup> {
       currentContext.set(this)
-      const defineTemplate = setup(props)
+      const defineTemplate = setup(props, {
+        element: this,
+        emit: (eventConfig) => {
+          this.dispatchEvent(new MyEvent(eventConfig))
+        }
+      })
       currentContext.set(null)
       return defineTemplate
     }

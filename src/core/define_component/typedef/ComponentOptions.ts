@@ -3,8 +3,12 @@ import type { Setup } from './Setup'
 import type { SuperProps } from './SuperProps'
 
 /** Конфигурация компонента */
-export interface ComponentOptions<Props extends SuperProps> {
+export interface ComponentOptions<
+  Props extends SuperProps,
+  EventType extends string
+> {
   readonly name: string
+  readonly emits?: EventType[]
   readonly props?: PropsOptions<Props>
-  readonly setup: Setup<Props>
+  readonly setup: Setup<Props, EventType>
 }
