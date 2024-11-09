@@ -10,7 +10,8 @@ import type {
   Component as IComponent,
   ComponentConstructor,
   ComponentOptions,
-  SuperProps
+  SuperProps,
+  WhenCallbacks
 } from './typedef'
 
 /**
@@ -26,18 +27,18 @@ function defineComponent<Props extends SuperProps>(
   const propsConfigs = _mapValues(props, processPropOptions)
   const Component = class extends HTMLElement implements IComponent {
     readonly requestRender: VoidFunction
-    readonly whenDestroyedCallbacks: Set<VoidFunction>
-    readonly whenMountedCallbacks: Set<VoidFunction>
-    readonly whenRequestedRenderCallbacks: Set<VoidFunction>
+    readonly #whenCallbacks: WhenCallbacks
 
     constructor() {
       super()
-      this.whenDestroyedCallbacks = new Set<VoidFunction>()
-      this.whenMountedCallbacks = new Set<VoidFunction>()
-      this.whenRequestedRenderCallbacks = new Set<VoidFunction>()
+      this.#whenCallbacks = {
+        whenDestroyed: new Set(),
+        whenMounted: new Set(),
+        whenRequestedRender: new Set()
+      }
       const template = this.#defineTemplate(this.#defineProps())
       this.requestRender = _debounce(() => {
-        this.whenRequestedRenderCallbacks.forEach((cb) => {
+        this.#whenCallbacks.whenRequestedRender.forEach((cb) => {
           cb()
         })
         render(template(), this)
@@ -49,28 +50,28 @@ function defineComponent<Props extends SuperProps>(
     }
 
     connectedCallback(): void {
-      this.whenMountedCallbacks.forEach((cb) => {
+      this.#whenCallbacks.whenMounted.forEach((cb) => {
         cb()
       })
       this.requestRender()
     }
 
     disconnectedCallback(): void {
-      this.whenDestroyedCallbacks.forEach((cb) => {
+      this.#whenCallbacks.whenDestroyed.forEach((cb) => {
         cb()
       })
     }
 
-    whenDestroyed(callback: VoidFunction): void {
-      this.whenDestroyedCallbacks.add(callback)
+    whenDestroyed(cb: VoidFunction): void {
+      this.#whenCallbacks.whenDestroyed.add(cb)
     }
 
-    whenMounted(callback: VoidFunction): void {
-      this.whenMountedCallbacks.add(callback)
+    whenMounted(cb: VoidFunction): void {
+      this.#whenCallbacks.whenMounted.add(cb)
     }
 
-    whenRequestedRender(callback: VoidFunction): void {
-      this.whenRequestedRenderCallbacks.add(callback)
+    whenRequestedRender(cb: VoidFunction): void {
+      this.#whenCallbacks.whenRequestedRender.add(cb)
     }
 
     #defineProp<K extends keyof Props>(
