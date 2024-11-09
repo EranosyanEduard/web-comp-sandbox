@@ -1,6 +1,4 @@
-import type { Typedef } from '../../utils'
+import type { TypeConstructor } from '../../helpers/typedef'
 
 /** Тип _props_-а, использующийся при его объявлении */
-export type RuntimeType =
-  | Typedef.JavaScript.TypeConstructor
-  | Typedef.JavaScript.TypeConstructor[]
+export type RuntimeType = TypeConstructor | TypeConstructor[]
