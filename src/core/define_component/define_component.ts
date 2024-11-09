@@ -32,6 +32,9 @@ function defineComponent<Props extends SuperProps>(
 
     constructor() {
       super()
+      this.whenDestroyedCallbacks = new Set<VoidFunction>()
+      this.whenMountedCallbacks = new Set<VoidFunction>()
+      this.whenRequestedRenderCallbacks = new Set<VoidFunction>()
       const template = this.#defineTemplate(this.#defineProps())
       this.requestRender = _debounce(() => {
         this.whenRequestedRenderCallbacks.forEach((cb) => {
@@ -39,9 +42,6 @@ function defineComponent<Props extends SuperProps>(
         })
         render(template(), this)
       })
-      this.whenDestroyedCallbacks = new Set<VoidFunction>()
-      this.whenMountedCallbacks = new Set<VoidFunction>()
-      this.whenRequestedRenderCallbacks = new Set<VoidFunction>()
     }
 
     containsContext(context: Context): boolean {

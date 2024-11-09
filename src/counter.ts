@@ -1,13 +1,33 @@
-export function setupCounter(element: HTMLButtonElement): void {
-  const COUNTER_STEP = 1
-  const INITIAL_COUNTER_VALUE = 0
-  let counter = INITIAL_COUNTER_VALUE
-  const setCounter = (count: number): void => {
-    counter = count
-    element.innerHTML = /* html */ `count is ${counter}`
+import { html } from 'lit-html'
+import {
+  computed,
+  defineComponent,
+  onDestroyed,
+  onMounted,
+  ref,
+  watch
+} from './core'
+
+export default defineComponent({
+  name: 'VCounter',
+  setup() {
+    const counter = ref(0)
+    const computedCounter = computed(() => `computed: ${counter.value}`)
+
+    onMounted(() => {
+      console.log('mounted')
+    })
+    onDestroyed(() => {
+      console.log('destroyed')
+    })
+    watch(counter, (next, prev) => {
+      console.log('counter next/prev', next, prev)
+    })
+
+    return () => html`
+      <button @click=${() => counter.value++}>count</button>
+      <span>count is ${counter.value}</span>
+      <span>count is ${computedCounter.value}</span>
+    `
   }
-  element.addEventListener('click', () => {
-    setCounter(counter + COUNTER_STEP)
-  })
-  setCounter(INITIAL_COUNTER_VALUE)
-}
+})

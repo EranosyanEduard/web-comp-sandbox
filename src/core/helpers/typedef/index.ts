@@ -1,3 +1,7 @@
 export type * from './Accessor'
+export type * from './CastArray'
 export type * from './Maybe'
 export type * from './Predicate'
+export type * from './TypeConstructor'
+export type * from './TypeFromConstructor'
+export type * from './TypesFromConstructors'

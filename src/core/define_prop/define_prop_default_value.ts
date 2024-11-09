@@ -1,4 +1,4 @@
-import type { Typedef } from '../utils'
+import type { Accessor, TypesFromConstructors } from '../helpers/typedef'
 import { PropValueError } from './errors'
 import type { DefaultValueParams, RuntimeType } from './typedef'
 
@@ -8,7 +8,7 @@ import type { DefaultValueParams, RuntimeType } from './typedef'
  */
 function defineDefaultValue<T extends RuntimeType>(
   params: DefaultValueParams<T>
-): Typedef.Utils.LazyValue<Typedef.JavaScript.TypesFromConstructors<T>> {
+): Accessor<TypesFromConstructors<T>>['get'] {
   const { default: lazyDefault, name, required = false } = params
   if (required) {
     return () => {

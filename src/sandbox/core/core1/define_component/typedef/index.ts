@@ -1,6 +1,0 @@
-export type * from './Component'
-export type * from './ComponentConstructor'
-export type * from './ComponentOptions'
-export type * from './ComputedStore'
-export type * from './PropsOptions'
-export type * from './SuperProps'

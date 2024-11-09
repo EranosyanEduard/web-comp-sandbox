@@ -1,17 +1,19 @@
 import _isEmpty from 'lodash-es/isEmpty'
-import { describe, expect, test, vi } from 'vitest'
-import type { Typedef } from '../../utils'
-import defineValidator from '../define_prop_validator'
+import { describe, expect, it, vi } from 'vitest'
+import type { Accessor, Predicate } from '../../helpers/typedef'
 import defineDefaultValue from '../define_prop_default_value'
+import defineValidator from '../define_prop_validator'
 import processPropOptions from '../process_prop_options'
 
 vi.mock('../define_prop_validator', () => ({ default: vi.fn() }))
 vi.mock('../define_prop_default_value', () => ({ default: vi.fn() }))
 
-describe('Тест функции `processPropOptions`', () => {
-  test('Должен обработать конфигурацию props-а с помощью функций `defineValidator` и `defineDefaultValue`', () => {
-    const lazyDefault: Typedef.Utils.LazyValue<string> = () => 'text'
-    const validator = (value: string): boolean => !_isEmpty(value)
+describe('тестовый набор функции `processPropOptions`', () => {
+  it('должен обработать конфигурацию props-а с помощью функций `defineValidator` и `defineDefaultValue`', () => {
+    expect.hasAssertions()
+
+    const lazyDefault: Accessor<string>['get'] = () => 'text'
+    const validator: Predicate<string> = (value) => !_isEmpty(value)
     processPropOptions(
       {
         type: String,
@@ -21,6 +23,7 @@ describe('Тест функции `processPropOptions`', () => {
       },
       'inputType'
     )
+
     expect(defineDefaultValue).toHaveBeenCalledOnce()
     expect(defineDefaultValue).toHaveBeenCalledWith({
       default: lazyDefault,

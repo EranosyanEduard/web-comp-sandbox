@@ -7,7 +7,7 @@ import _isNumber from 'lodash-es/isNumber'
 import _isObject from 'lodash-es/isObject'
 import _isString from 'lodash-es/isString'
 import { PropTypeError } from './errors'
-import type { Predicate } from '../helpers/typedef'
+import type { Predicate, TypeConstructor } from '../helpers/typedef'
 import type { RuntimeType, ValidatorParams } from './typedef'
 
 /**
@@ -15,12 +15,9 @@ import type { RuntimeType, ValidatorParams } from './typedef'
  * и значениями _props_-ов.
  */
 const DEFAULT_PROP_VALIDATORS: ReadonlyMap<
-  Typedef.JavaScript.TypeConstructor,
-  Typedef.Utils.Predicate<unknown>
-> = new Map<
-  Typedef.JavaScript.TypeConstructor,
-  Typedef.Utils.Predicate<unknown>
->([
+  TypeConstructor,
+  Predicate<unknown>
+> = new Map<TypeConstructor, Predicate<unknown>>([
   [Array, _isArray],
   [Boolean, _isBoolean],
   [Function, _isFunction],
