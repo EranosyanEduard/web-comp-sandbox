@@ -9,4 +9,6 @@ export interface Component extends Context {
   ) => void
 
   readonly connectedCallback?: VoidFunction
+
+  readonly disconnectedCallback?: VoidFunction
 }

@@ -3,16 +3,14 @@ import _debounce from 'lodash-es/debounce'
 import _mapValues from 'lodash-es/mapValues'
 import _reduce from 'lodash-es/reduce'
 import type { Head } from 'ts-essentials'
-import { currentInstance } from '../current_instance'
+import { type Context, currentContext } from '../current_context'
 import { defineCustomElement } from '../define_custom_element'
-import defineComputedStore from './define_computed_store'
 import { processPropOptions } from '../define_prop'
 import type {
   Component as IComponent,
   ComponentConstructor,
   ComponentOptions,
-  SuperProps,
-  ComputedStore
+  SuperProps
 } from './typedef'
 
 /**
@@ -27,23 +25,52 @@ function defineComponent<Props extends SuperProps>(
   const { name, props, setup } = options
   const propsConfigs = _mapValues(props, processPropOptions)
   const Component = class extends HTMLElement implements IComponent {
-    readonly computedStore: Pick<ComputedStore, 'subscribe'>
-
     readonly requestRender: VoidFunction
+    readonly whenDestroyedCallbacks: Set<VoidFunction>
+    readonly whenMountedCallbacks: Set<VoidFunction>
+    readonly whenRequestedRenderCallbacks: Set<VoidFunction>
 
     constructor() {
       super()
-      const computedStore = defineComputedStore()
       const template = this.#defineTemplate(this.#defineProps())
-      this.computedStore = computedStore
       this.requestRender = _debounce(() => {
-        computedStore.evaluate()
+        this.whenRequestedRenderCallbacks.forEach((cb) => {
+          cb()
+        })
         render(template(), this)
       })
+      this.whenDestroyedCallbacks = new Set<VoidFunction>()
+      this.whenMountedCallbacks = new Set<VoidFunction>()
+      this.whenRequestedRenderCallbacks = new Set<VoidFunction>()
+    }
+
+    containsContext(context: Context): boolean {
+      return context instanceof HTMLElement && this.contains(context)
     }
 
     connectedCallback(): void {
+      this.whenMountedCallbacks.forEach((cb) => {
+        cb()
+      })
       this.requestRender()
+    }
+
+    disconnectedCallback(): void {
+      this.whenDestroyedCallbacks.forEach((cb) => {
+        cb()
+      })
+    }
+
+    whenDestroyed(callback: VoidFunction): void {
+      this.whenDestroyedCallbacks.add(callback)
+    }
+
+    whenMounted(callback: VoidFunction): void {
+      this.whenMountedCallbacks.add(callback)
+    }
+
+    whenRequestedRender(callback: VoidFunction): void {
+      this.whenRequestedRenderCallbacks.add(callback)
     }
 
     #defineProp<K extends keyof Props>(
@@ -69,8 +96,8 @@ function defineComponent<Props extends SuperProps>(
       proxy: Head<Parameters<typeof setup>>
     ): void {
       Reflect.defineProperty(proxy, name, {
-        // @ts-expect-error Объявить свойство `this[name]` в методе
-        // `#defineProp`.
+        // @ts-expect-error игнорировать ошибку типизации:
+        // объявить свойство `this[name]` в методе `#defineProp`.
         get: (): (typeof proxy)[K] => this[name]
       })
     }
@@ -91,9 +118,9 @@ function defineComponent<Props extends SuperProps>(
     #defineTemplate(
       props: Head<Parameters<typeof setup>>
     ): ReturnType<typeof setup> {
-      currentInstance.set(this)
-      const defineTemplate = setup(props, { element: this })
-      currentInstance.set(null)
+      currentContext.set(this)
+      const defineTemplate = setup(props)
+      currentContext.set(null)
       return defineTemplate
     }
   }
