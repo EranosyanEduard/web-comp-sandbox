@@ -2,11 +2,20 @@ import { html } from 'lit-html'
 import {
   computed,
   defineComponent,
+  defineStore,
   onDestroyed,
   onMounted,
   ref,
   watch
 } from './core'
+
+const storeA = defineStore(() => {
+  const counter = ref(0)
+  return { counter }
+})
+const storeB = defineStore(() => {
+  return storeA()
+})
 
 export default defineComponent({
   name: 'VCounter',
@@ -17,9 +26,11 @@ export default defineComponent({
       default: () => 'v-counter'
     }
   },
+  shadowRootConfig: { mode: 'closed' },
   setup(props, { element, emit }) {
     const counter = ref(0)
     const computedCounter = computed(() => `computed: ${counter.value}`)
+    const store_ = storeB()
 
     onMounted(() => {
       console.log('mounted')
@@ -36,13 +47,16 @@ export default defineComponent({
       <button
         @click=${(evt) => {
           counter.value++
+          store_.counter.value++
           emit({ type: 'foo', payload: counter.value })
         }}
       >
         count
+        <slot name="foo"></slot>
       </button>
-      <span>count is ${counter.value}</span>
-      <span>count is ${computedCounter.value}</span>
+      <span>counter: ${counter.value}</span>
+      <span>computedCounter: ${computedCounter.value}</span>
+      <span>counter: ${store_.counter.value}</span>
     `
   }
 })

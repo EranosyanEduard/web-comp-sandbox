@@ -7,7 +7,15 @@ const vApp = (title?: string): ReturnType<typeof html> => {
     <v-counter
       .foo=${title}
       @foo=${console.log.bind(console)}
-    />
+    >
+      <span slot="foo">abcde</span>
+    </v-counter>
+    <v-counter
+      .foo=${title}
+      @foo=${console.log.bind(console)}
+    >
+      <span slot="foo">abcde</span>
+    </v-counter>
   </div>`
 }
 

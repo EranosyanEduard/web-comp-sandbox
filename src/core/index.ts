@@ -1,6 +1,7 @@
 export * from './computed'
 export * from './current_context'
 export * from './define_component'
+export * from './define_store'
 export * from './on_destroyed'
 export * from './on_mounted'
 export * from './reactive'

@@ -11,4 +11,5 @@ export interface ComponentOptions<
   readonly emits?: EventType[]
   readonly props?: PropsOptions<Props>
   readonly setup: Setup<Props, EventType>
+  readonly shadowRootConfig?: ShadowRootInit
 }

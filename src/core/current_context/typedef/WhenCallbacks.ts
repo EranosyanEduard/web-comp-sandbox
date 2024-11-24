@@ -1,9 +1,8 @@
 import type { Dictionary, StrictExtract } from 'ts-essentials'
-import type { Context } from '../../current_context'
+import type { Context } from './Context'
 
 /** Хранилище функций, вызываемых в рамках _жизненного цикла_ компонента */
 export type WhenCallbacks = Readonly<_WhenCallbacks>
-
 type _WhenCallbacks = Dictionary<
   Set<VoidFunction>,
   StrictExtract<

@@ -1,9 +1,15 @@
 import { render } from 'lit-html'
 import _debounce from 'lodash-es/debounce'
+import _isElement from 'lodash-es/isElement'
+import _isObject from 'lodash-es/isObject'
 import _mapValues from 'lodash-es/mapValues'
 import _reduce from 'lodash-es/reduce'
 import type { Head } from 'ts-essentials'
-import { type Context, currentContext } from '../current_context'
+import {
+  type Context as IContext,
+  Ctx as Context,
+  currentContext
+} from '../current_context'
 import { defineCustomElement } from '../define_custom_element'
 import { processPropOptions } from '../define_prop'
 import { MyEvent } from '../emit'
@@ -11,8 +17,7 @@ import type {
   Component as IComponent,
   ComponentConstructor,
   ComponentOptions,
-  SuperProps,
-  WhenCallbacks
+  SuperProps
 } from './typedef'
 
 /**
@@ -25,55 +30,53 @@ function defineComponent<
   Props extends SuperProps,
   EventType extends string = string
 >(options: ComponentOptions<Props, EventType>): ComponentConstructor {
-  const { name, props, setup } = options
+  const { name, props, setup, shadowRootConfig } = options
   const propsConfigs = _mapValues(props, processPropOptions)
   const Component = class extends HTMLElement implements IComponent {
     readonly requestRender: VoidFunction
-    readonly #whenCallbacks: WhenCallbacks
+    readonly #context: Context
 
     constructor() {
       super()
-      this.#whenCallbacks = {
-        whenDestroyed: new Set(),
-        whenMounted: new Set(),
-        whenRequestedRender: new Set()
-      }
+      this.#context = new Context({
+        containsContext: (context) => {
+          // @ts-expect-error игнорировать ошибку типизации:
+          // вызов `_isElement(context)` гарантирует, что `context` соответствует
+          // требованиям, предъявляемым к параметру метода `this.contains`.
+          return _isElement(context) && this.contains(context)
+        }
+      })
+      const root = this.#defineRoot()
       const template = this.#defineTemplate(this.#defineProps())
       this.requestRender = _debounce(() => {
-        this.#whenCallbacks.whenRequestedRender.forEach((cb) => {
-          cb()
-        })
-        render(template(), this)
+        this.#context.requestRender()
+        render(template(), root)
       })
     }
 
-    containsContext(context: Context): boolean {
-      return context instanceof HTMLElement && this.contains(context)
+    containsContext(context: IContext): boolean {
+      return this.#context.containsContext(context)
     }
 
     connectedCallback(): void {
-      this.#whenCallbacks.whenMounted.forEach((cb) => {
-        cb()
-      })
+      this.#context.mount()
       this.requestRender()
     }
 
     disconnectedCallback(): void {
-      this.#whenCallbacks.whenDestroyed.forEach((cb) => {
-        cb()
-      })
+      this.#context.destroy()
     }
 
     whenDestroyed(cb: VoidFunction): void {
-      this.#whenCallbacks.whenDestroyed.add(cb)
+      this.#context.whenDestroyed(cb)
     }
 
     whenMounted(cb: VoidFunction): void {
-      this.#whenCallbacks.whenMounted.add(cb)
+      this.#context.whenMounted(cb)
     }
 
     whenRequestedRender(cb: VoidFunction): void {
-      this.#whenCallbacks.whenRequestedRender.add(cb)
+      this.#context.whenRequestedRender(cb)
     }
 
     #defineProp<K extends keyof Props>(
@@ -116,6 +119,12 @@ function defineComponent<
         },
         props
       )
+    }
+
+    #defineRoot(): this | ShadowRoot {
+      return _isObject(shadowRootConfig)
+        ? this.attachShadow(shadowRootConfig)
+        : this
     }
 
     #defineTemplate(
