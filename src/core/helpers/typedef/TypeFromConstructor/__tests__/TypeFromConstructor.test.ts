@@ -1,4 +1,4 @@
-import type { AnyArray, AnyFunction } from 'ts-essentials'
+import type { AnyFunction } from 'ts-essentials'
 import { describe, expect, expectTypeOf, it } from 'vitest'
 import type { TypeConstructor } from '../../TypeConstructor'
 import type { TypeFromConstructor } from '../TypeFromConstructor'
@@ -15,7 +15,7 @@ describe('тестовый набор типа `TypeFromConstructor`', () => {
       return cons
     }
 
-    expectTypeOf(inferType(Array)).toEqualTypeOf<AnyArray<unknown>>()
+    expectTypeOf(inferType(Array)).toEqualTypeOf<unknown[]>()
     expectTypeOf(inferType(Boolean)).toEqualTypeOf<boolean>()
     expectTypeOf(inferType(Function)).toEqualTypeOf<
       AnyFunction<unknown[], unknown>

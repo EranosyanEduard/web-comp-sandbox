@@ -12,7 +12,7 @@ import {
 } from '../current_context'
 import { defineCustomElement } from '../define_custom_element'
 import { processPropOptions } from '../define_prop'
-import { MyEvent } from '../emit'
+import defineEventConfig from './define_event_config'
 import type {
   Component as IComponent,
   ComponentConstructor,
@@ -133,8 +133,9 @@ function defineComponent<
       currentContext.set(this)
       const defineTemplate = setup(props, {
         element: this,
-        emit: (eventConfig) => {
-          this.dispatchEvent(new MyEvent(eventConfig))
+        emit: (...args: unknown[]) => {
+          const { type, eventInit } = defineEventConfig(...args)
+          this.dispatchEvent(new CustomEvent(type, eventInit))
         }
       })
       currentContext.set(null)

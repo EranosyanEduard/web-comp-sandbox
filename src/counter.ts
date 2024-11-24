@@ -19,11 +19,14 @@ const storeB = defineStore(() => {
 
 export default defineComponent({
   name: 'VCounter',
-  emits: ['foo'],
+  emits: ['foo', 'bar', 'baz'],
   props: {
     foo: {
       type: String,
       default: () => 'v-counter'
+    },
+    bar: {
+      type: [String, Number]
     }
   },
   shadowRootConfig: { mode: 'closed' },
@@ -31,6 +34,7 @@ export default defineComponent({
     const counter = ref(0)
     const computedCounter = computed(() => `computed: ${counter.value}`)
     const store_ = storeB()
+    const _ = props.bar
 
     onMounted(() => {
       console.log('mounted')
@@ -48,7 +52,9 @@ export default defineComponent({
         @click=${(evt) => {
           counter.value++
           store_.counter.value++
-          emit({ type: 'foo', payload: counter.value })
+          emit('foo')
+          emit('bar', 'yes')
+          emit({ type: 'baz', eventInit: { detail: counter } })
         }}
       >
         count

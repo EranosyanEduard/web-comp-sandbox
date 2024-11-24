@@ -1,11 +1,16 @@
 import { Ctx as Context, currentContext } from '../current_context'
 import type { Accessor } from '../helpers/typedef'
 
+/**
+ * Определить хранилище данных.
+ * @param setup - функция, возвращающая данные
+ */
 function defineStore<R>(setup: Accessor<R>['get']): Accessor<R>['get'] {
   const storeContext = new Context({
-    containsContext: () => {
-      throw new Error('not implemented')
-    }
+    // Запретить пользователю использовать api `provide/inject`, поскольку
+    // вы всегда можете непосредственно импортировать экземпляр хранилища в
+    // веб-компонент.
+    containsContext: () => false
   })
   currentContext.set(storeContext)
   const api = setup()
