@@ -31,6 +31,7 @@
   },
   "dependencies": {
     "lit-html": "^3.2.1",
-    "lodash-es": "^4.17.21"
+    "lodash-es": "^4.17.21",
+    "navigo": "^8.11.1"
   }
 }
