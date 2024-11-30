@@ -3,6 +3,7 @@ import type {
   Predicate,
   TypesFromConstructors
 } from '../../helpers/typedef'
+import type { Reflector } from './Reflector'
 import type { RuntimeType } from './RuntimeType'
 
 /** Конфигурация _props_-а */
@@ -14,6 +15,7 @@ interface AllPropOptions<
 > {
   readonly type: TypeConstructor
   readonly default?: Accessor<TypeScriptType>['get']
+  readonly reflector?: Reflector<TypeScriptType>
   readonly required?: boolean
   readonly validator?: Predicate<TypeScriptType>
 }

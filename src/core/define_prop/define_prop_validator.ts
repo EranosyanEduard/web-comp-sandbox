@@ -1,30 +1,9 @@
 import _castArray from 'lodash-es/castArray'
-import _isArray from 'lodash-es/isArray'
-import _isBoolean from 'lodash-es/isBoolean'
 import _isEmpty from 'lodash-es/isEmpty'
-import _isFunction from 'lodash-es/isFunction'
-import _isNumber from 'lodash-es/isNumber'
-import _isObject from 'lodash-es/isObject'
-import _isString from 'lodash-es/isString'
+import type { Predicate } from '../helpers/typedef'
 import { PropTypeError } from './errors'
-import type { Predicate, TypeConstructor } from '../helpers/typedef'
 import type { RuntimeType, ValidatorParams } from './typedef'
-
-/**
- * Коллекция основных валидаторов для проверки соответствия между типами
- * и значениями _props_-ов.
- */
-const DEFAULT_PROP_VALIDATORS: ReadonlyMap<
-  TypeConstructor,
-  Predicate<unknown>
-> = new Map<TypeConstructor, Predicate<unknown>>([
-  [Array, _isArray],
-  [Boolean, _isBoolean],
-  [Function, _isFunction],
-  [Number, _isNumber],
-  [Object, _isObject],
-  [String, _isString]
-])
+import DEFAULT_PROP_VALIDATORS from './validators'
 
 /**
  * Определить валидатор для проверки значения _props_-а.
@@ -40,14 +19,13 @@ function defineValidator<T extends RuntimeType>(
   return (value) => {
     const isValidValueType =
       _isEmpty(validators) || validators.some((validate) => validate(value))
-    // @ts-expect-error Если пользователь определил валидатор, то когда
-    // проверка значения дойдёт до него, аргумент будет соответствовать типу,
-    // указанному в сигнатуре такого валидатора.
-    const isValidValue: boolean = isValidValueType && validator(value)
-    if (!isValidValue) {
-      throw new PropTypeError({ type, value })
-    }
-    return true
+    // @ts-expect-error игнорировать ошибку типизации:
+    // Если пользователь определил валидатор, то когда проверка значения дойдёт
+    // до него, аргумент будет соответствовать типу, указанному в сигнатуре
+    // такого валидатора.
+    const isValidValue = isValidValueType && validator(value)
+    if (isValidValue) return true
+    throw new PropTypeError({ type, value })
   }
 }
 

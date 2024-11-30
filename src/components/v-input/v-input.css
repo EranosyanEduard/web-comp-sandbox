@@ -1,0 +1,30 @@
+input {
+  border: thin solid
+    color-mix(in hsl, var(--v-color-black-base), var(--v-color-white-base));
+  box-sizing: border-box;
+  height: var(--v-input-props-size);
+  outline: none;
+  padding: 0 calc(var(--v-input-props-size) / 6);
+  transition: border-color 0.25s;
+  width: calc(var(--v-input-props-size) * 6);
+}
+
+input:focus {
+  border-color: var(--v-input-color-primary);
+}
+
+:host([size='xs']) button {
+  --v-input-props-size: var(--v-input-size-xs);
+}
+
+:host([size='sm']) button {
+  --v-input-props-size: var(--v-input-size-sm);
+}
+
+:host([size='lg']) button {
+  --v-input-props-size: var(--v-input-size-lg);
+}
+
+:host([size='xl']) button {
+  --v-input-props-size: var(--v-input-size-xl);
+}

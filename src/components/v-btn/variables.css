@@ -1,0 +1,8 @@
+v-btn {
+  /* Размеры */
+  --v-btn-size-md: 36px;
+  --v-btn-size-xs: calc(var(--v-btn-size-md) * 0.5);
+  --v-btn-size-sm: calc(var(--v-btn-size-md) * 0.75);
+  --v-btn-size-lg: calc(var(--v-btn-size-md) * 1.25);
+  --v-btn-size-xl: calc(var(--v-btn-size-md) * 1.5);
+}

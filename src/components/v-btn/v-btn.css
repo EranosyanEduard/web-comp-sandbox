@@ -1,0 +1,78 @@
+@import './animation.css';
+
+button {
+  background-color: var(--v-btn-color-primary);
+  border: none;
+  color: white;
+  cursor: pointer;
+  height: var(--v-btn-props-size);
+  min-width: calc(var(--v-btn-props-size) * 1.75);
+  padding: 0 calc(var(--v-btn-props-size) / 2.25);
+  text-transform: uppercase;
+  transition: background-color 0.25s;
+}
+
+button:disabled {
+  --v-btn-color-primary: color-mix(
+    in hsl,
+    var(--v-color-black-base),
+    var(--v-color-white-base)
+  );
+
+  cursor: default;
+}
+
+button:not(:disabled):hover {
+  opacity: 0.8;
+}
+
+:host([loading='true']) slot {
+  display: none;
+}
+
+:host([loading='true']) button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:host([loading='true']) button::after {
+  animation: rotate360 1s linear infinite;
+  box-sizing: border-box;
+  content: '';
+  display: block;
+  border: 2px solid currentcolor;
+  border-radius: 50%;
+  border-right-color: hsl(0 0% 100% / 0) !important;
+  rotate: 360deg;
+  height: calc(var(--v-btn-props-size) * 0.75);
+  width: calc(var(--v-btn-props-size) * 0.75);
+}
+
+:host([size='xs']) button {
+  --v-btn-props-size: var(--v-btn-size-xs);
+}
+
+:host([size='sm']) button {
+  --v-btn-props-size: var(--v-btn-size-sm);
+}
+
+:host([size='lg']) button {
+  --v-btn-props-size: var(--v-btn-size-lg);
+}
+
+:host([size='xl']) button {
+  --v-btn-props-size: var(--v-btn-size-xl);
+}
+
+:host([outlined='true']) button {
+  background: none;
+  border: thin solid var(--v-btn-color-primary);
+  color: var(--v-btn-color-primary);
+}
+
+:host([text='true']) button {
+  background: none;
+  border: none;
+  color: var(--v-btn-color-primary);
+}

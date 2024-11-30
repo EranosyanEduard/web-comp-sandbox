@@ -1,0 +1,8 @@
+v-input {
+  /* Размеры */
+  --v-input-size-md: 36px;
+  --v-input-size-xs: calc(var(--v-btn-size-md) * 0.5);
+  --v-input-size-sm: calc(var(--v-btn-size-md) * 0.75);
+  --v-input-size-lg: calc(var(--v-btn-size-md) * 1.25);
+  --v-input-size-xl: calc(var(--v-btn-size-md) * 1.5);
+}

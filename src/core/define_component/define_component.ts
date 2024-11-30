@@ -1,9 +1,10 @@
 import { render } from 'lit-html'
 import _debounce from 'lodash-es/debounce'
+import _forEach from 'lodash-es/forEach'
 import _isElement from 'lodash-es/isElement'
+import _isFunction from 'lodash-es/isFunction'
 import _isObject from 'lodash-es/isObject'
 import _mapValues from 'lodash-es/mapValues'
-import _reduce from 'lodash-es/reduce'
 import type { Head } from 'ts-essentials'
 import {
   type Context as IContext,
@@ -47,7 +48,7 @@ function defineComponent<
         }
       })
       const root = this.#defineRoot()
-      const template = this.#defineTemplate(this.#defineProps())
+      const template = this.#defineTemplate()
       this.requestRender = _debounce(() => {
         this.#context.requestRender()
         render(template(), root)
@@ -83,42 +84,35 @@ function defineComponent<
       name: K,
       config: (typeof propsConfigs)[K]
     ): void {
-      const { default: lazyDefault, validator } = config
+      const { default: lazyDefault, reflector = null, validator } = config
+      const setAttribute: VoidFunction = () => {
+        if (!_isFunction(reflector)) return
+        // @ts-expect-error игнорировать ошибку типизации:
+        // невозможно обеспечить соответствие типов.
+        this.setAttribute(name, reflector(this[name]))
+      }
       let prevValue: Head<Parameters<typeof validator>> | null = null
       Reflect.defineProperty(this, name, {
-        get: (): typeof prevValue => prevValue,
+        get: (): typeof prevValue => prevValue ?? lazyDefault(),
         set: (next: typeof prevValue) => {
           const nextValue = next ?? lazyDefault()
           if (validator(nextValue) && prevValue !== nextValue) {
             prevValue = nextValue
+            setAttribute()
             this.requestRender()
           }
         }
       })
-    }
-
-    #definePropProxy<K extends keyof Props>(
-      name: K,
-      proxy: Head<Parameters<typeof setup>>
-    ): void {
-      Reflect.defineProperty(proxy, name, {
-        // @ts-expect-error игнорировать ошибку типизации:
-        // объявить свойство `this[name]` в методе `#defineProp`.
-        get: (): (typeof proxy)[K] => this[name]
-      })
+      setAttribute()
     }
 
     #defineProps(): Head<Parameters<typeof setup>> {
-      const props = {} as unknown as Head<Parameters<typeof setup>>
-      return _reduce(
-        propsConfigs,
-        (acc, config, name) => {
-          this.#defineProp(name, config)
-          this.#definePropProxy(name, acc)
-          return acc
-        },
-        props
-      )
+      _forEach(propsConfigs, (config, name) => {
+        this.#defineProp(name, config)
+      })
+      // @ts-expect-error игнорировать ошибку типизации:
+      // невозможно обеспечить соответствие типов.
+      return this
     }
 
     #defineRoot(): this | ShadowRoot {
@@ -127,10 +121,9 @@ function defineComponent<
         : this
     }
 
-    #defineTemplate(
-      props: Head<Parameters<typeof setup>>
-    ): ReturnType<typeof setup> {
+    #defineTemplate(): ReturnType<typeof setup> {
       currentContext.set(this)
+      const props = this.#defineProps()
       const defineTemplate = setup(props, {
         element: this,
         emit: (...args: unknown[]) => {
