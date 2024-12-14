@@ -1,0 +1,7 @@
+/* @define v-color */
+
+.v-color_light {
+  --v-color-black-base: hsl(0 0 0);
+  --v-color-primary-base: hsl(151 71% 34% / 1);
+  --v-color-white-base: hsl(0 0 100 / 1);
+}

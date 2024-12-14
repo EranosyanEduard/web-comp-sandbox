@@ -1,0 +1,6 @@
+export type * from './Array'
+export type * from './Boolean'
+export type * from './Function'
+export type * from './Number'
+export type * from './Object'
+export type * from './String'

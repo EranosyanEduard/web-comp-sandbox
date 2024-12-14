@@ -1,0 +1,37 @@
+{
+  "name": "web-components-ts",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev_host": "vite --host",
+    "build": "tsc && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "prepare": "husky",
+    "test": "vitest --environment jsdom --typecheck"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "@types/jsdom": "^21.1.7",
+    "@types/lodash-es": "^4.17.12",
+    "@vitest/eslint-plugin": "^1.1.7",
+    "eslint": "^8.0.1",
+    "eslint-config-love": "^71.0.0",
+    "husky": "^9.1.6",
+    "jsdom": "^25.0.1",
+    "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "ts-essentials": "^10.0.2",
+    "typescript": "*",
+    "vite": "^5.4.1",
+    "vitest": "^2.1.1"
+  },
+  "dependencies": {
+    "lit-html": "^3.2.1",
+    "lodash-es": "^4.17.21",
+    "zod": "^3.23.8"
+  }
+}
